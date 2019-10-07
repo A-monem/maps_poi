@@ -16,7 +16,7 @@
     <!-- Home Page -->
     <div data-role="page" id="homePage">
         <div class="header" data-role="header" data-position="fixed">
-            <h1 >Maps POI Marker</h1>
+            <h1>Maps POI Marker</h1>
         </div>
         <div class="main" data-role="main" class="ui-content"">
             <button id="btnScan" class="ui-btn">Scan QR code</button>
@@ -36,25 +36,42 @@
     </div>
     <!-- Page Two -->
     <div data-role="page" id="pageTwo">
-            <div class="header" data-role="header" data-position="fixed">
-                <h1>Add a Note</h1>
-            </div>
-            <div class="main" data-role="main" class="ui-content"">
-                <textarea id="textareaAddNote" rows="5" cols="35"></textarea>
-                <a id="btnAddNote" href="#homePage" class="button ui-btn">Add Note</a>
-                <a href="#homePage" class="button ui-btn">Back</a>
-            </div>
-            <div class="footer" data-role="footer" data-position="fixed">
-                <p>Thanks for using Zafier</p>
-            </div>
+        <div class="header" data-role="header" data-position="fixed">
+            <h1>Add a Note</h1>
         </div>
+        <div class="main" data-role="main" class="ui-content"">
+            <textarea id="textareaAddNote" rows="5" cols="35"></textarea>
+            <a id="btnAddNote" href="#homePage" class="button ui-btn">Add Note</a>
+            <a href="#homePage" class="button ui-btn">Back</a>
+        </div>
+        <div class="footer" data-role="footer" data-position="fixed">
+            <p>Thanks for using Zafier</p>
+        </div>
+    </div>
+     <!-- Page Three -->
+     <div data-role="page" id="pageThree">
+        <div class="header" data-role="header" data-position="fixed">
+            <h1>Display Notes</h1>
+        </div>
+        <div class="main" data-role="main" class="ui-content"">
+            <!-- to be removed -->
+            <p id="status_3"></p> 
+            <ul id="listNotes" data-role="listview"></ul>    
+            <a href="#homePage" class="button ui-btn">Back</a>
+        </div>
+        <div class="footer" data-role="footer" data-position="fixed">
+            <p>Thanks for using Zafier</p>
+        </div>
+    </div>
+
     <script type="text/javascript" src="cordova.js"></script>
     <script type="text/javascript" src="js/scanner.js"></script>
     <script type="text/javascript" src="js/databaseHandler.js"></script>
-    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyATg1OuJE7xO_lLorYn8RMPCdVeW4-h5r4&callback=initMap"></script>
+    <script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyATg1OuJE7xO_lLorYn8RMPCdVeW4-h5r4&callback=initMap"></script>
     <script type="text/javascript" src="js/mapHandler.js"></script>
     <script type="text/javascript" src="js/index.js"></script>
-    
+
 </body>
 
 </html>

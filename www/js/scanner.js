@@ -8,6 +8,8 @@ let scan = {
             },
             function (error) {
                 alert("Scanning failed: " + error);
+                const msg = `Scanning failed, ${error}`
+                document.getElementById("status_2").innerText = msg;
             },
             {
                 preferFrontCamera: true, // iOS and Android

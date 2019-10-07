@@ -24,16 +24,11 @@ let mapHandler = {
             `<p>${addr}</p>
             <button id="${id}-addNote"><a href="#pageTwo">Add a Note</a></button>
             <button id="${id}-addPhoto" >Add Photo</button>
-            <button id="${id}-deleteMarker" >Delete Marker</button>
+            <button id="${id}-deleteMarker">Delete Marker</button>
             <button id="${id}-showPhotos">Show Photos</button>
-            <button id="${id}-showNotes">Show Notes</button>`
+            <button id="${id}-showNotes" onclick="markerHandler.getNote(${id})">
+                <a href="#pageThree">Show Notes</a>
+            </button>`
         )
     }
 };
-
-// let map 
-// function initMap() {
-//     const uluru = {lat: -25.344, lng: 131.036};
-//     map = new google.maps.Map(document.getElementById('map'), {zoom: 3, center: uluru});
-//     // infoWindow = new google.maps.InfoWindow;
-// }

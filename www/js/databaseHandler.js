@@ -67,12 +67,15 @@ let markerHandler = {
         databaseHandler.db.transaction(function (tx) {
             tx.executeSql("SELECT * FROM markers",
                 [],
-                function (tx, results) {
+                function (tx, results) {  //if id = undefined => id = markerHandler.id
                     if (id === undefined) {
-                        result = results.rows.item(markerHandler.id - 1);
+                        id = markerHandler.id;
                     } else {
-                        result = results.rows.item(id - 1);
+                        markerHandler.id = id;
                     }
+
+                    result = results.rows.item(markerHandler.id - 1);
+
                     const msg = `result, ${result}`
                     document.getElementById("status_1").innerText = msg;
                     console.log('result from getMarker', result);
@@ -128,30 +131,34 @@ let markerHandler = {
             }
         );
     }, 
-
-};
-
-let noteHandler = {
     addNote: function () {
-        databaseHandler.db.transaction(function (tx) {
-            tx.executeSql("INSERT INTO markers(lat, lng, addr) VALUES(?, ?, ?)",
-                [lat, lng, addr],
+        const note = document.getElementById("textareaAddNote").value
+        databaseHandler.db.transaction(function(tx) {
+            tx.executeSql("INSERT INTO notes(note, markerId) VALUES(?, ?)",
+                [note, markerHandler.id],
                 function (tx, results) {
-                    console.log("results from insert into table", results.insertId);
-                    markerHandler.id = results.insertId;
-                    mapHandler.createMarker(lat, lng, addr, markerHandler.id);
+                    console.log("results from insert into note table", results.insertId);
+                    const msg = `success adding note`
+                    document.getElementById("status_2").innerText = msg;
                 },
                 function (tx, error) {
-                    console.log("add marker error: " + error.message);
+                    console.log("add note error: " + error.message);
+                    const msg_2 = `error adding note`
+                    document.getElementById("status_2").innerText = msg_2;
                 }
             );
         },
             function (error) {
-                console.log("Transaction error: " + error.message);
+                console.log("Transaction add note error: " + error.message);
+                const msg_2 = `error transaction adding note`
+                document.getElementById("status_2").innerText = msg_2;
             },
             function () {
-                console.log("Inserted values successfully");
+                console.log("Inserted note successfully");
+                const msg = `success transaction adding note`
+                document.getElementById("status_1").innerText = msg;
             }
         );
+
     },
 };

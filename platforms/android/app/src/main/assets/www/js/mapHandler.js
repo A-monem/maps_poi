@@ -15,6 +15,7 @@ let mapHandler = {
         infoWindow.setContent(content)
         marker.addListener('click', function() {
             infoWindow.open(map, marker);
+            markerHandler.getMarker(id);
           });
         mapHandler.map.setCenter(latLng);
     }, 

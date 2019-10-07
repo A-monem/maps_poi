@@ -4,18 +4,6 @@ let databaseHandler = {
         this.db = window.openDatabase("poi.db", "1.0", "poi database", 1000000);
         this.db.transaction(function (tx) {
             tx.executeSql(
-                "DROP TABLE markers",
-                [],
-                function (tx, results) {
-                    console.log("results from drop table ", results)
-                },
-                function (tx, error) {
-                    console.log("Error while dropping table: " + error.message);
-                    const msg = `error droping table, ${error}`
-                    document.getElementById("status_1").innerText = msg;
-                }
-            );
-            tx.executeSql(
                 "CREATE TABLE IF NOT EXISTS markers(markerId integer primary key, lat decimal, lng decimal, addr text)",
                 [],
                 function (tx, results) {
@@ -79,12 +67,15 @@ let markerHandler = {
         databaseHandler.db.transaction(function (tx) {
             tx.executeSql("SELECT * FROM markers",
                 [],
-                function (tx, results) {
+                function (tx, results) {  //if id = undefined => id = markerHandler.id
                     if (id === undefined) {
-                        result = results.rows.item(markerHandler.id - 1);
+                        id = markerHandler.id;
                     } else {
-                        result = results.rows.item(id - 1);
+                        markerHandler.id = id;
                     }
+
+                    result = results.rows.item(markerHandler.id - 1);
+
                     const msg = `result, ${result}`
                     document.getElementById("status_1").innerText = msg;
                     console.log('result from getMarker', result);
@@ -139,6 +130,35 @@ let markerHandler = {
                 document.getElementById("status_2").innerText = msg_2;
             }
         );
-    }
+    }, 
+    addNote: function () {
+        const note = document.getElementById("textareaAddNote").value
+        databaseHandler.db.transaction(function(tx) {
+            tx.executeSql("INSERT INTO notes(note, markerId) VALUES(?, ?)",
+                [note, markerHandler.id],
+                function (tx, results) {
+                    console.log("results from insert into note table", results.insertId);
+                    const msg = `success adding note`
+                    document.getElementById("status_2").innerText = msg;
+                },
+                function (tx, error) {
+                    console.log("add note error: " + error.message);
+                    const msg_2 = `error adding note`
+                    document.getElementById("status_2").innerText = msg_2;
+                }
+            );
+        },
+            function (error) {
+                console.log("Transaction add note error: " + error.message);
+                const msg_2 = `error transaction adding note`
+                document.getElementById("status_2").innerText = msg_2;
+            },
+            function () {
+                console.log("Inserted note successfully");
+                const msg = `success transaction adding note`
+                document.getElementById("status_1").innerText = msg;
+            }
+        );
 
+    },
 };

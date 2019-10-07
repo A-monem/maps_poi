@@ -3,15 +3,28 @@ let databaseHandler = {
     createDatabase: function () {
         this.db = window.openDatabase("poi.db", "1.0", "poi database", 1000000);
         this.db.transaction(function (tx) {
-            
             tx.executeSql(
-                "CREATE TABLE IF NOT EXISTS markers(_id integer primary key, lat decimal, lng decimal, addr text)",
+                "CREATE TABLE IF NOT EXISTS markers(markerId integer primary key, lat decimal, lng decimal, addr text)",
                 [],
                 function (tx, results) {
                     console.log("results from create table ", results)
                 },
                 function (tx, error) {
                     console.log("Error while creating the table: " + error.message);
+                    const msg = `error creating markers table, ${error}`
+                    document.getElementById("status_1").innerText = msg;
+                }
+            );
+            tx.executeSql(
+                "CREATE TABLE IF NOT EXISTS notes(noteId integer PRIMARY KEY, note text, markerId integer, FOREIGN KEY (markerId) REFERENCES markers(markerId))",
+                [],
+                function (tx, results) {
+                    console.log("results from create notes table ", results)
+                },
+                function (tx, error) {
+                    console.log("Error while creating the notes table: " + error.message);
+                    const msg = `error creating notes table, ${error}`
+                    document.getElementById("status_2").innerText = msg;
                 }
             );
         },
@@ -114,6 +127,31 @@ let markerHandler = {
                 document.getElementById("status_2").innerText = msg_2;
             }
         );
-    }
+    }, 
 
+};
+
+let noteHandler = {
+    addNote: function () {
+        databaseHandler.db.transaction(function (tx) {
+            tx.executeSql("INSERT INTO markers(lat, lng, addr) VALUES(?, ?, ?)",
+                [lat, lng, addr],
+                function (tx, results) {
+                    console.log("results from insert into table", results.insertId);
+                    markerHandler.id = results.insertId;
+                    mapHandler.createMarker(lat, lng, addr, markerHandler.id);
+                },
+                function (tx, error) {
+                    console.log("add marker error: " + error.message);
+                }
+            );
+        },
+            function (error) {
+                console.log("Transaction error: " + error.message);
+            },
+            function () {
+                console.log("Inserted values successfully");
+            }
+        );
+    },
 };

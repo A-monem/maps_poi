@@ -4,13 +4,39 @@ let databaseHandler = {
         this.db = window.openDatabase("poi.db", "1.0", "poi database", 1000000);
         this.db.transaction(function (tx) {
             tx.executeSql(
-                "CREATE TABLE IF NOT EXISTS markers(_id integer primary key, lat decimal, lng decimal, addr text)",
+                "DROP TABLE markers",
+                [],
+                function (tx, results) {
+                    console.log("results from drop table ", results)
+                },
+                function (tx, error) {
+                    console.log("Error while dropping table: " + error.message);
+                    const msg = `error droping table, ${error}`
+                    document.getElementById("status_1").innerText = msg;
+                }
+            );
+            tx.executeSql(
+                "CREATE TABLE IF NOT EXISTS markers(markerId integer primary key, lat decimal, lng decimal, addr text)",
                 [],
                 function (tx, results) {
                     console.log("results from create table ", results)
                 },
                 function (tx, error) {
                     console.log("Error while creating the table: " + error.message);
+                    const msg = `error creating markers table, ${error}`
+                    document.getElementById("status_1").innerText = msg;
+                }
+            );
+            tx.executeSql(
+                "CREATE TABLE IF NOT EXISTS notes(noteId integer PRIMARY KEY, note text, markerId integer, FOREIGN KEY (markerId) REFERENCES markers(markerId))",
+                [],
+                function (tx, results) {
+                    console.log("results from create notes table ", results)
+                },
+                function (tx, error) {
+                    console.log("Error while creating the notes table: " + error.message);
+                    const msg = `error creating notes table, ${error}`
+                    document.getElementById("status_2").innerText = msg;
                 }
             );
         },

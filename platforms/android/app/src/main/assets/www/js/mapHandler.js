@@ -3,20 +3,19 @@ let mapHandler = {
     defaultPosition: {lat: -25.344, lng: 131.036},
     initMap: function() {
         mapHandler.map = new google.maps.Map(document.getElementById('map'), {zoom: 3, center: mapHandler.defaultPosition});
-        // infoWindow = new google.maps.InfoWindow;
     }, 
-    addMarker: function(lat, lng, addr, id){
+    createMarker: function(lat, lng, addr, id){
         const latLng = new google.maps.LatLng(lat, lng);
         const marker = new google.maps.Marker({
             position: latLng,
             map: mapHandler.map
           });
-        // const infoWindow = new google.maps.InfoWindow;
-        // const content = mapHandler.setContent(id, addr)
-        // infoWindow.setContent(content)
-        // marker.addEventListener('click', function() {
-        //     infoWindow.open(map, marker);
-        //   });
+        const infoWindow = new google.maps.InfoWindow;
+        const content = mapHandler.setContent(id, addr)
+        infoWindow.setContent(content)
+        marker.addListener('click', function() {
+            infoWindow.open(map, marker);
+          });
         mapHandler.map.setCenter(latLng);
     }, 
     setContent: function(id, addr){

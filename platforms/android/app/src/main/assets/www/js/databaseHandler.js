@@ -34,7 +34,7 @@ let markerHandler = {
                 function (tx, results) {
                     console.log("results from insert into table", results.insertId);
                     markerHandler.id = results.insertId;
-                    // mapHandler.addMarker(lat, lng, addr, markerHandler.id);
+                    mapHandler.createMarker(lat, lng, addr, markerHandler.id);
                 },
                 function (tx, error) {
                     console.log("add marker error: " + error.message);

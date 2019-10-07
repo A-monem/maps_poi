@@ -3,6 +3,7 @@ let databaseHandler = {
     createDatabase: function () {
         this.db = window.openDatabase("poi.db", "1.0", "poi database", 1000000);
         this.db.transaction(function (tx) {
+            
             tx.executeSql(
                 "CREATE TABLE IF NOT EXISTS markers(_id integer primary key, lat decimal, lng decimal, addr text)",
                 [],
@@ -34,7 +35,7 @@ let markerHandler = {
                 function (tx, results) {
                     console.log("results from insert into table", results.insertId);
                     markerHandler.id = results.insertId;
-                    // mapHandler.addMarker(lat, lng, addr, markerHandler.id);
+                    mapHandler.createMarker(lat, lng, addr, markerHandler.id);
                 },
                 function (tx, error) {
                     console.log("add marker error: " + error.message);

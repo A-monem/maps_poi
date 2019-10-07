@@ -3,8 +3,7 @@ let scan = {
         cordova.plugins.barcodeScanner.scan(
             function (result) {
                 result = JSON.parse(result.text);
-                markerHandler.addMarker(result.lat, result.lon, result.addr);
-                markerHandler.getMarker(); 
+                markerHandler.addMarker(result.lat, result.lon, result.addr); 
             },
             function (error) {
                 alert("Scanning failed: " + error);

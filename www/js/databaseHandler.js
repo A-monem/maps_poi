@@ -63,27 +63,27 @@ let markerHandler = {
                 console.log("Transaction error: " + error.message);
             },
             function () {
-                console.log("Inserted values successfully");
+                markerHandler.getMarker(markerHandler.id);
             }
         );
     },
     getMarker: function (id) {
         databaseHandler.db.transaction(function (tx) {
-            tx.executeSql("SELECT * FROM markers",
-                [],
+            tx.executeSql("SELECT * FROM markers where markerId = ?",
+                [id],
                 function (tx, results) {  
-                    if (id === undefined) {
-                        id = markerHandler.id;
-                    } else {
-                        markerHandler.id = id;
-                    }
+                    // if (id === undefined) {
+                    //     id = markerHandler.id;
+                    // } else {
+                    //     markerHandler.id = id;
+                    // }
 
-                    const result = results.rows.item(markerHandler.id - 1);
-
+                    // const result = results.rows.item(markerHandler.id - 1);
+                    const result = results.rows[0];
                     const msg = `result, ${result}`
                     document.getElementById("status_1").innerText = msg;
                     console.log('result from getMarker', result);
-                    document.getElementById("markerId").innerText = ` id: ${markerHandler.id}`;
+                    document.getElementById("markerId").innerText = ` id: ${id}`;
                     document.getElementById("latitude").innerText = ` latitude: ${result.lat}`;
                     document.getElementById("longitude").innerText = ` longitude: ${result.lng}`;
                     document.getElementById("address").innerText = ` address: ${result.addr}`;
@@ -109,7 +109,7 @@ let markerHandler = {
     },
     deleteMarker: function (id) {
         databaseHandler.db.transaction(function (tx) {
-            tx.executeSql("delete from markers where id = ?",
+            tx.executeSql("delete from markers where markerId = ?",
                 [id],
                 function (tx, results) {
                     const msg = `deleted`
@@ -118,7 +118,7 @@ let markerHandler = {
                 },
                 function (tx, error) {
                     console.log("delete marker error: " + error.message);
-                    const msg = `delete error, ${error}`
+                    const msg = `delete error, ${error.message}`
                     document.getElementById("status_1").innerText = msg;
                 }
             );

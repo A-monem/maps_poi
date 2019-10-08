@@ -31,6 +31,16 @@ let databaseHandler = {
                     document.getElementById("status_2").innerText = msg;
                 }
             );
+            tx.executeSql(
+                "CREATE TABLE IF NOT EXISTS photos(photoId integer PRIMARY KEY, photoSrc text, markerId integer, FOREIGN KEY (markerId) REFERENCES markers(markerId))",
+                [],
+                function (tx, results) {
+                    console.log("results from create photos table ", results);
+                },
+                function (tx, error) {
+                    console.log("Error while creating the photos table: " + error.message);
+                }
+            );
         },
             function (error) {
                 console.log("Transaction error: " + error.message);
@@ -203,6 +213,53 @@ let markerHandler = {
                 console.log("Retreived notes successfully");
                 const msg_2 = `Retreived notes successfully`
                 document.getElementById("status_2").innerText = msg_2;
+            }
+        );
+    },
+    addPhoto: function (fileLocation) {
+        databaseHandler.db.transaction(function(tx) {
+            tx.executeSql("INSERT INTO photos(photoSrc, markerId) VALUES(?, ?)",
+                [fileLocation, markerHandler.id],
+                function (tx, results) {
+                    console.log("results from insert into photos table successful", results);
+                },
+                function (tx, error) {
+                    console.log("add photo source error: " + error.message);
+                }
+            );
+        },
+            function (error) {
+                console.log("Transaction add photo error: " + error.message);
+            },
+            function () {
+                console.log("Transaction photo successfully");
+            }
+        );  
+    },
+    getPhoto: function() {
+        databaseHandler.db.transaction(function (tx) {
+            tx.executeSql("SELECT * FROM photos where markerId=?",
+                [markerHandler.id],
+                function (tx, results) {  
+                    let div = document.getElementById("listPhotos");
+                    div.innerHTML = '';
+                    const result = results.rows;
+                    for (let i=0; i< result.length; i++){
+                        const img = document.createElement("img");
+                        img.src = result[i].photoSrc
+                        div.appendChild(img);
+                    }
+                },
+                function (tx, error) {
+                    console.log("get photo error: " + error.message);
+                }
+            );
+        },
+            function (error) {
+                console.log("Transaction get photo error: " + error.message);
+            },
+            function () {
+                console.log("Retreived notes successfully");
             }
         );
     },

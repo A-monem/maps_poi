@@ -16,6 +16,7 @@ let mapHandler = {
         infoWindow.setContent(content)
         marker.addListener('click', function () {
             infoWindow.open(map, marker);
+            markerHandler.id = id;
             markerHandler.getMarker(id);
             mapHandler.currentMarker = marker;
         });
@@ -24,13 +25,11 @@ let mapHandler = {
     setContent: function (id, addr) {
         return (
             `<p>${addr}</p>
-            <button id="${id}-addNote"><a href="#pageTwo">Add a Note</a></button>
-            <button id="${id}-addPhoto" >Add Photo</button>
-            <button id="${id}-deleteMarker" onclick="mapHandler.deleteMarker(${id})">Delete Marker</button>
-            <button id="${id}-showPhotos">Show Photos</button>
-            <button id="${id}-showNotes" onclick="markerHandler.getNote(${id})">
-                <a href="#pageThree">Show Notes</a>
-            </button>`
+            <button><a href="#pageTwo">Add a Note</a></button>
+            <button><a href="#pageFour">Add a Photo</a></button>
+            <button onclick="mapHandler.deleteMarker(${id})">Delete Marker</button>
+            <button onclick="markerHandler.getPhoto()"><a href="#pageFive">Show Photos</a></button>
+            <button onclick="markerHandler.getNote(${id})"><a href="#pageThree">Show Notes</a></button>`
         )
     },
     deleteMarker: function (id) {

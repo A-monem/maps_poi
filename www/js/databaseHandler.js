@@ -7,14 +7,10 @@ let databaseHandler = {
                 "CREATE TABLE IF NOT EXISTS markers(markerId integer primary key, lat decimal, lng decimal, addr text)",
                 [],
                 function (tx, results) {
-                    console.log("results from create table ", results)
-                    const msg = `Success creating markers table`
-                    document.getElementById("status_1").innerText = msg;
+                    console.log("success create markers table", results)
                 },
                 function (tx, error) {
-                    console.log("Error while creating the table: " + error.message);
-                    const msg = `error creating markers table, ${error}`
-                    document.getElementById("status_1").innerText = msg;
+                    console.log("Error while creating markers table: " + error.message);
                 }
             );
             tx.executeSql(
@@ -22,13 +18,9 @@ let databaseHandler = {
                 [],
                 function (tx, results) {
                     console.log("results from create notes table ", results);
-                    const msg = `success creating notes table`
-                    document.getElementById("status_2").innerText = msg;
                 },
                 function (tx, error) {
                     console.log("Error while creating the notes table: " + error.message);
-                    const msg = `error creating notes table, ${error}`
-                    document.getElementById("status_2").innerText = msg;
                 }
             );
             tx.executeSql(
@@ -43,7 +35,7 @@ let databaseHandler = {
             );
         },
             function (error) {
-                console.log("Transaction error: " + error.message);
+                console.log("Create DB Transaction error: " + error.message);
             },
             function () {
                 console.log("Create DB transaction completed successfully");
@@ -73,151 +65,176 @@ let markerHandler = {
                 console.log("Transaction error: " + error.message);
             },
             function () {
-                markerHandler.getMarker(markerHandler.id);
+                markerHandler.getMarker();
             }
         );
     },
-    getMarker: function (id) {
+    getMarker: function () {
         databaseHandler.db.transaction(function (tx) {
             tx.executeSql("SELECT * FROM markers where markerId = ?",
-                [id],
-                function (tx, results) {  
-                    // if (id === undefined) {
-                    //     id = markerHandler.id;
-                    // } else {
-                    //     markerHandler.id = id;
-                    // }
-
-                    // const result = results.rows.item(markerHandler.id - 1);
+                [markerHandler.id],
+                function (tx, results) {
                     const result = results.rows[0];
-                    const msg = `result, ${result}`
-                    document.getElementById("status_1").innerText = msg;
                     console.log('result from getMarker', result);
-                    document.getElementById("markerId").innerText = ` id: ${id}`;
+                    document.getElementById("markerId").innerText = ` id: ${markerHandler.id}`;
                     document.getElementById("latitude").innerText = ` latitude: ${result.lat}`;
                     document.getElementById("longitude").innerText = ` longitude: ${result.lng}`;
                     document.getElementById("address").innerText = ` address: ${result.addr}`;
                 },
                 function (tx, error) {
                     console.log("get marker error: " + error.message);
-                    const msg = `read error, ${error}`
-                    document.getElementById("status_1").innerText = msg;
                 }
             );
         },
             function (error) {
                 console.log("Transaction error: " + error.message);
-                const msg_2 = `transaction error, ${error.message}`
-                document.getElementById("status_2").innerText = msg_2;
             },
             function () {
-                console.log("Retreived values successfully");
-                const msg_2 = `Retreived values successfully`
-                document.getElementById("status_2").innerText = msg_2;
+                console.log("Transaction get marker successful");
             }
         );
     },
-    deleteMarker: function (id) {
+    getAllMarkers: function () {
+        databaseHandler.db.transaction(function (tx) {
+            tx.executeSql("SELECT * FROM markers",
+                [],
+                function (tx, results) {
+                    const result = results.rows;
+                    for (let i=0; i< result.length; i++){
+                        mapHandler.createMarker(result[i].lat, 
+                            result[i].lng, result[i].addr, result[i].markerId);
+                    }
+                },
+                function (tx, error) {
+                    console.log("get all markers error: " + error.message);
+                }
+            );
+        },
+            function (error) {
+                console.log("Transaction get all markers error: " + error.message);
+            },
+            function () {
+                console.log("Transaction get all markers successful");
+            }
+        );
+    },
+    deleteMarker: function () {
         databaseHandler.db.transaction(function (tx) {
             tx.executeSql("delete from markers where markerId = ?",
-                [id],
+                [markerHandler.id],
                 function (tx, results) {
-                    const msg = `deleted`
-                    document.getElementById("status_1").innerText = msg;
                     console.log('marker deleted', results);
                 },
                 function (tx, error) {
                     console.log("delete marker error: " + error.message);
-                    const msg = `delete error, ${error.message}`
-                    document.getElementById("status_1").innerText = msg;
                 }
             );
+            tx.executeSql("delete from notes where markerId = ?",
+                [markerHandler.id],
+                function (tx, results) {
+                    console.log('all notes deleted', results);
+                },
+                function (tx, error) {
+                    console.log("delete all notes error: " + error.message);
+                }
+            );
+            tx.executeSql("delete from photos where markerId = ?",
+                [markerHandler.id],
+                function (tx, results) {
+                    console.log('all photos deleted', results);
+                },
+                function (tx, error) {
+                    console.log("delete all photos error: " + error.message);
+                });
         },
             function (error) {
-                console.log("Transaction error: " + error.message);
-                const msg_2 = `transaction error, ${error}`
-                document.getElementById("status_2").innerText = msg_2;
+                console.log("Transaction delete marker error: " + error.message);
             },
             function () {
-                console.log("Retreived values successfully");
-                const msg_2 = `Deleted successfully`
-                document.getElementById("status_2").innerText = msg_2;
+                console.log("Transaction delete marker successfully");
             }
         );
-    }, 
+    },
     addNote: function () {
         let note = document.getElementById("textareaAddNote");
-        databaseHandler.db.transaction(function(tx) {
+        databaseHandler.db.transaction(function (tx) {
             tx.executeSql("INSERT INTO notes(note, markerId) VALUES(?, ?)",
                 [note.value, markerHandler.id],
                 function (tx, results) {
                     console.log("results from insert into note table", results.insertId);
-                    const msg = `success adding note`
-                    document.getElementById("status_2").innerText = msg;
-                    note.value = "";
+                    note.value = "";    //reset textarea
                 },
                 function (tx, error) {
                     console.log("add note error: " + error.message);
-                    const msg_2 = `error adding note`
-                    document.getElementById("status_2").innerText = msg_2;
                 }
             );
         },
             function (error) {
                 console.log("Transaction add note error: " + error.message);
-                const msg_2 = `error transaction adding note`
-                document.getElementById("status_2").innerText = msg_2;
             },
             function () {
-                console.log("Inserted note successfully");
-                const msg = `success transaction adding note`
-                document.getElementById("status_1").innerText = msg;
+                console.log("Transaction add note successful");
             }
         );
-            
+
     },
-    getNote: function (id) {
+    getNote: function () {
         databaseHandler.db.transaction(function (tx) {
             tx.executeSql("SELECT * FROM notes where markerId=?",
-                [id],
-                function (tx, results) {  
+                [markerHandler.id],
+                function (tx, results) {
                     let ul = document.getElementById("listNotes");
                     ul.innerHTML = '';
                     const result = results.rows;
-                    for (let i=0; i< result.length; i++){
+                    for (let i = 0; i < result.length; i++) {
                         const li = document.createElement("li");
+                        const btn = document.createElement("button");
+                        btn.classList.add("btnDeleteNote");
+                        btn.appendChild(document.createTextNode("Delete Note"));
+                        btn.addEventListener("click", () => {
+                            markerHandler.deleteNote(result[i].noteId);
+                            btn.parentNode.parentNode.removeChild(btn.parentNode)
+                        });
                         li.appendChild(document.createTextNode(result[i].note));
+                        li.appendChild(btn);
                         ul.appendChild(li);
                     }
-                    // results.rows.forEach( (row) => {
-                    //     const li = document.createElement("li");
-                    //     li.appendChild(document.createTextNode(row.note));
-                    //     ul.appendChild(li);
-   
-                    // });
-
                 },
                 function (tx, error) {
                     console.log("get note error: " + error.message);
-                    const msg = `read error, ${error.message}`
-                    document.getElementById("status_1").innerText = msg;
                 }
             );
         },
             function (error) {
-                console.log("Transaction error: " + error.message);
-                const msg_2 = `transaction error, ${error.message}`
-                document.getElementById("status_2").innerText = msg_2;
+                console.log("Transaction get notes error: " + error.message);
             },
             function () {
-                console.log("Retreived notes successfully");
-                const msg_2 = `Retreived notes successfully`
-                document.getElementById("status_2").innerText = msg_2;
+                console.log("Transaction get notes successfully");
+            }
+        );
+    },
+    deleteNote: function (id) {
+        databaseHandler.db.transaction(function (tx) {
+            tx.executeSql("delete from notes where noteId = ?",
+                [id],
+                function (tx, results) {
+                    console.log('note deleted', results);
+                },
+                function (tx, error) {
+                    console.log("delete note error: " + error.message);
+                }
+            );
+        },
+            function (error) {
+                console.log("Transaction delete note error: " + error.message);
+            },
+            function () {
+                console.log("Transaction delete note successfully");
             }
         );
     },
     addPhoto: function (fileLocation) {
-        databaseHandler.db.transaction(function(tx) {
+        databaseHandler.db.transaction(function (tx) {
             tx.executeSql("INSERT INTO photos(photoSrc, markerId) VALUES(?, ?)",
                 [fileLocation, markerHandler.id],
                 function (tx, results) {
@@ -234,20 +251,30 @@ let markerHandler = {
             function () {
                 console.log("Transaction photo successfully");
             }
-        );  
+        );
     },
-    getPhoto: function() {
+    getPhoto: function () {
         databaseHandler.db.transaction(function (tx) {
             tx.executeSql("SELECT * FROM photos where markerId=?",
                 [markerHandler.id],
-                function (tx, results) {  
+                function (tx, results) {
                     let div = document.getElementById("listPhotos");
+                    div.classList.add("divCenter");
                     div.innerHTML = '';
                     const result = results.rows;
-                    for (let i=0; i< result.length; i++){
+                    for (let i = 0; i < result.length; i++) {
                         const img = document.createElement("img");
+                        const btn = document.createElement("button");
+                        btn.appendChild(document.createTextNode("Delete Photo"));
+                        btn.classList.add("ui-btn");
+                        btn.addEventListener("click", () => {
+                            markerHandler.deletePhoto(result[i].photoId);
+                            btn.parentNode.removeChild(img);
+                            btn.parentNode.removeChild(btn);
+                        });
                         img.src = result[i].photoSrc
                         div.appendChild(img);
+                        div.appendChild(btn);
                     }
                 },
                 function (tx, error) {
@@ -260,6 +287,26 @@ let markerHandler = {
             },
             function () {
                 console.log("Retreived notes successfully");
+            }
+        );
+    },
+    deletePhoto: function (id) {
+        databaseHandler.db.transaction(function (tx) {
+            tx.executeSql("delete from photos where photoId = ?",
+                [id],
+                function (tx, results) {
+                    console.log('photo deleted', results);
+                },
+                function (tx, error) {
+                    console.log("delete photo error: " + error.message);
+                }
+            );
+        },
+            function (error) {
+                console.log("Transaction delete photo error: " + error.message);
+            },
+            function () {
+                console.log("Transaction delete photo successfully");
             }
         );
     },

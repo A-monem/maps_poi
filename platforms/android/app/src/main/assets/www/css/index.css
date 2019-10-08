@@ -3,17 +3,33 @@
     width: 100%;  /* The width is the width of the web page */
 }
 
-.header, .footer{
+/* .header {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+} */
+
+.divCenter{
+    padding: 10px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
 }
 
-/* .main{
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-} */
+.btnDeleteNote{
+    display: inline;
+    margin-left: 10px; 
+}
+
+.btnInfoView{
+    width: 100%;
+    display: block;
+    color: black;
+}
+
+.btnInfoView a{
+    text-decoration: none;
+    color: black;
+}

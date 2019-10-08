@@ -9,6 +9,7 @@ let app = {
     mapHandler.initMap();
     document.getElementById("btnAddNote").addEventListener("click", markerHandler.addNote);
     document.getElementById("btnAddPhoto").addEventListener("click", cameraHandler.takePhoto);
+    markerHandler.getAllMarkers();
   },
 };
 

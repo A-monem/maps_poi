@@ -3,6 +3,7 @@ let databaseHandler = {
     createDatabase: function () {
         this.db = window.openDatabase("poi.db", "1.0", "poi database", 1000000);
         this.db.transaction(function (tx) {
+            //create a markers table
             tx.executeSql(
                 "CREATE TABLE IF NOT EXISTS markers(markerId integer primary key, lat decimal, lng decimal, addr text)",
                 [],
@@ -14,6 +15,7 @@ let databaseHandler = {
                 }
             );
             tx.executeSql(
+                //create a notes table
                 "CREATE TABLE IF NOT EXISTS notes(noteId integer PRIMARY KEY, note text, markerId integer, FOREIGN KEY (markerId) REFERENCES markers(markerId))",
                 [],
                 function (tx, results) {
@@ -24,6 +26,7 @@ let databaseHandler = {
                 }
             );
             tx.executeSql(
+                //create a photos table
                 "CREATE TABLE IF NOT EXISTS photos(photoId integer PRIMARY KEY, photoSrc text, markerId integer, FOREIGN KEY (markerId) REFERENCES markers(markerId))",
                 [],
                 function (tx, results) {
@@ -46,7 +49,7 @@ let databaseHandler = {
 };
 
 let markerHandler = {
-    id: null,
+    id: null, //active marker id
     addMarker: function (lat, lng, addr) {
         databaseHandler.db.transaction(function (tx) {
             tx.executeSql("INSERT INTO markers(lat, lng, addr) VALUES(?, ?, ?)",
@@ -69,17 +72,17 @@ let markerHandler = {
             }
         );
     },
-    getMarker: function () {
+    getMarker: function () {  //get a marker from DB
         databaseHandler.db.transaction(function (tx) {
             tx.executeSql("SELECT * FROM markers where markerId = ?",
                 [markerHandler.id],
                 function (tx, results) {
                     const result = results.rows[0];
                     console.log('result from getMarker', result);
-                    document.getElementById("markerId").innerText = ` id: ${markerHandler.id}`;
-                    document.getElementById("latitude").innerText = ` latitude: ${result.lat}`;
-                    document.getElementById("longitude").innerText = ` longitude: ${result.lng}`;
-                    document.getElementById("address").innerText = ` address: ${result.addr}`;
+                    document.getElementById("markerId").value = `${markerHandler.id}`;
+                    document.getElementById("latitude").value = `${result.lat}`;
+                    document.getElementById("longitude").value = `${result.lng}`;
+                    document.getElementById("address").value = `${result.addr}`;
                 },
                 function (tx, error) {
                     console.log("get marker error: " + error.message);
@@ -94,7 +97,7 @@ let markerHandler = {
             }
         );
     },
-    getAllMarkers: function () {
+    getAllMarkers: function () { //get all markers from DB
         databaseHandler.db.transaction(function (tx) {
             tx.executeSql("SELECT * FROM markers",
                 [],
@@ -118,9 +121,9 @@ let markerHandler = {
             }
         );
     },
-    deleteMarker: function () {
+    deleteMarker: function () { //delete marker
         databaseHandler.db.transaction(function (tx) {
-            tx.executeSql("delete from markers where markerId = ?",
+            tx.executeSql("delete from markers where markerId = ?", 
                 [markerHandler.id],
                 function (tx, results) {
                     console.log('marker deleted', results);
@@ -129,7 +132,7 @@ let markerHandler = {
                     console.log("delete marker error: " + error.message);
                 }
             );
-            tx.executeSql("delete from notes where markerId = ?",
+            tx.executeSql("delete from notes where markerId = ?", //cascade deletes
                 [markerHandler.id],
                 function (tx, results) {
                     console.log('all notes deleted', results);
@@ -138,7 +141,7 @@ let markerHandler = {
                     console.log("delete all notes error: " + error.message);
                 }
             );
-            tx.executeSql("delete from photos where markerId = ?",
+            tx.executeSql("delete from photos where markerId = ?", //cascade deletes
                 [markerHandler.id],
                 function (tx, results) {
                     console.log('all photos deleted', results);
@@ -157,7 +160,8 @@ let markerHandler = {
     },
     addNote: function () {
         let note = document.getElementById("textareaAddNote");
-        databaseHandler.db.transaction(function (tx) {
+        note.value !== "" //check if note is empty
+        ? databaseHandler.db.transaction(function (tx) { 
             tx.executeSql("INSERT INTO notes(note, markerId) VALUES(?, ?)",
                 [note.value, markerHandler.id],
                 function (tx, results) {
@@ -175,8 +179,8 @@ let markerHandler = {
             function () {
                 console.log("Transaction add note successful");
             }
-        );
-
+        )
+        : null   
     },
     getNote: function () {
         databaseHandler.db.transaction(function (tx) {
@@ -188,6 +192,7 @@ let markerHandler = {
                     const result = results.rows;
                     for (let i = 0; i < result.length; i++) {
                         const li = document.createElement("li");
+                        li.classList.add("liNote");
                         const btn = document.createElement("button");
                         btn.classList.add("btnDeleteNote");
                         btn.appendChild(document.createTextNode("Delete Note"));
@@ -213,7 +218,7 @@ let markerHandler = {
             }
         );
     },
-    deleteNote: function (id) {
+    deleteNote: function (id) { //delete a note
         databaseHandler.db.transaction(function (tx) {
             tx.executeSql("delete from notes where noteId = ?",
                 [id],
@@ -253,7 +258,7 @@ let markerHandler = {
             }
         );
     },
-    getPhoto: function () {
+    getPhoto: function () { 
         databaseHandler.db.transaction(function (tx) {
             tx.executeSql("SELECT * FROM photos where markerId=?",
                 [markerHandler.id],
@@ -262,9 +267,9 @@ let markerHandler = {
                     div.classList.add("divCenter");
                     div.innerHTML = '';
                     const result = results.rows;
-                    for (let i = 0; i < result.length; i++) {
-                        const img = document.createElement("img");
-                        const btn = document.createElement("button");
+                    for (let i = 0; i < result.length; i++) { //create img and delete button from each photo
+                        const img = document.createElement("img"); 
+                        const btn = document.createElement("button"); 
                         btn.appendChild(document.createTextNode("Delete Photo"));
                         btn.classList.add("ui-btn");
                         btn.addEventListener("click", () => {

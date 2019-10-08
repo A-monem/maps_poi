@@ -1,35 +1,41 @@
 #map {
-    height: 300px;  /* The height is 400 pixels */
-    width: 100%;  /* The width is the width of the web page */
+    height: 400px; 
+    width: 100%;
 }
 
-/* .header {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-} */
+label{
+    padding-left: 8px;
+}
 
 .divCenter{
-    padding: 10px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
 }
 
-.btnDeleteNote{
-    display: inline;
-    margin-left: 10px; 
+#listNotes{
+    width: 100%;
+    padding: 0;
+}
+
+.liNote{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 5px;
 }
 
 .btnInfoView{
     width: 100%;
     display: block;
     color: black;
+    margin-top: 5px;
+    margin-bottom: 5px;
 }
 
-.btnInfoView a{
+.btnInfoView a, .btnInfoView a:visited, .btnInfoView a:active{
     text-decoration: none;
     color: black;
+    font-weight: normal;
 }

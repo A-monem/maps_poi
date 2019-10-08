@@ -4,12 +4,12 @@ let app = {
     document.addEventListener("deviceready", app.ready);
   },
   ready: function () {
-    databaseHandler.createDatabase();
+    databaseHandler.createDatabase(); // initializa database and create tables
     document.getElementById("btnScan").addEventListener("click", scan.barcodeScanner);
-    mapHandler.initMap();
+    mapHandler.initMap(); //initialaize map
     document.getElementById("btnAddNote").addEventListener("click", markerHandler.addNote);
     document.getElementById("btnAddPhoto").addEventListener("click", cameraHandler.takePhoto);
-    markerHandler.getAllMarkers();
+    markerHandler.getAllMarkers(); //check for already existing markers in DB
   },
 };
 

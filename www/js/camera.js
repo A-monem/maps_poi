@@ -11,10 +11,11 @@ let cameraHandler = {
             targetHeight: 400,
             saveToPhotoAlbum: true
         };
+
         navigator.camera.getPicture(cameraHandler.cameraSuccess, cameraHandler.cameraError, cameraOptions);
     },
     cameraSuccess: function(imageData){
-        markerHandler.addPhoto(imageData);
+        markerHandler.addPhoto(imageData); //add photo path to DB
     },
     cameraError: function (message){
         console.log('error while taking a photo:', message);
